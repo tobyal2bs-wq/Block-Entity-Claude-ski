@@ -1,0 +1,21 @@
+name: Release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish v1.0.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v1.0.0 >/dev/null 2>&1; then echo "already released"; exit 0; fi
+          zip -qr block-display-bosses.zip block-display-bosses
+          gh release create v1.0.0 block-display-bosses.zip --target "$GITHUB_SHA" \
+            -t "Block Entity Claude Skill v1.0.0" \
+            -n "First release of the block-display-bosses skill. Download block-display-bosses.zip and upload it in Claude's Skills settings, or copy the block-display-bosses folder into your skills folder."
